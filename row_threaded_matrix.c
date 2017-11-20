@@ -1,7 +1,7 @@
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 #define M 2
 #define K 2
 #define N 1
@@ -27,14 +27,8 @@ int main()
     for(i = 0; i < M; i++)
     {
 
-
-
-           //thread id
-
-    pthread_attr_init(&attr_array[i]);    //get default attributes
-     error_flag = pthread_create(&threads_array[i],&attr_array[i],calculate_row,&i); //create the
-
-
+        pthread_attr_init(&attr_array[i]);    //get default attributes
+        error_flag = pthread_create(&threads_array[i],&attr_array[i],calculate_row,i); //create the
 
         if(error_flag!=0)
         {
@@ -45,7 +39,7 @@ int main()
 
     for(i = 0; i < M; i++)
     {
-        pthread_join(threads_array[i],NULL);
+      int temp =   pthread_join(threads_array[i],NULL);
     }
 
 
