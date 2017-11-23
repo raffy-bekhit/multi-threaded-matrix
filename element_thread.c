@@ -2,10 +2,11 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "element_thread.h"
 #define M 2
 #define K 2
 #define N 1
-#define TYPE int
+#define TYPE float
 typedef struct Parameters  //paramters passed to the function
 {
 
@@ -42,13 +43,9 @@ void create_Parameters(Parameters*p , TYPE** matrix1,TYPE** matrix2,TYPE**matrix
 
 
 
-void *calculate_element(void *element); //prototypes for the used functions.
-pthread_t create_thread_per_element(struct element *el);
-void print_resulting_matrix(TYPE ** matrixC);
-void calculate_matrix_by_element(TYPE ** matrixA, TYPE** matrixB, TYPE **matrixC,int rowsA,int colsA,int rowsB, int colsB );
 
 //void calculate_matrix_without_thread();
-int main()
+/*int main()
 {   int i=0;
         int** matrixA = (int**)malloc(M*sizeof(int *));
 for(i=0; i<M ;i++)
@@ -93,30 +90,30 @@ for(i=0; i<M ;i++)
       return 0;
 }
 
-
+*/
 //printing the resulting matrix C
-void print_resulting_matrix(TYPE ** matrixC)
+void print_resulting_matrix(TYPE ** matrixC,int rowsC,int colsC)
 {     TYPE ** result_matrix=matrixC;
       int i, j;
-      for (i = 0; i < M; i++)
+      for (i = 0; i < rowsC; i++)
       {
-            for (j = 0; j < N; j++)
+            for (j = 0; j < colsC; j++)
             {
-                  printf("%d ", result_matrix[i][j]);
+                  printf("%f ", result_matrix[i][j]);
             }
             printf("\n");
       }
 }
-/*void calculate_matrix_without_thread()
+void calculate_matrix_without_thread(TYPE ** matrixA, TYPE** matrixB,TYPE** matrixC,int rowsA,int colsA, int colsB)
 {
       int i, j, p;
       float result = 0;
-      for (i = 0; i < M; i++)
+      for (i = 0; i < rowsA; i++)
       {
-            for (j = 0; j < N; j++)
+            for (j = 0; j < colsB; j++)
             {
                   result = 0;
-                  for (p = 0; p < K; p++)
+                  for (p = 0; p < colsA; p++)
                   {
                         result = result +(matrixA[i][p]*matrixB[p][j]);
                   }
@@ -124,7 +121,7 @@ void print_resulting_matrix(TYPE ** matrixC)
             }
       }
 }
-*/
+
 //function for calculating the multiplication of two matrices by creating a thread for each element.
 void calculate_matrix_by_element(TYPE ** matrixA, TYPE** matrixB, TYPE **matrixC,int rowsA,int colsA,int rowsB, int colsB )
 {
