@@ -5,7 +5,7 @@
 #define K 2  //row2 col1
 #define N 1  //col2
 
-#define TYPE int
+#define TYPE float
 
 typedef struct Parameters  //paramters passed to the function
 {
@@ -61,6 +61,14 @@ void row_threaded_marix_mult(TYPE** ,TYPE** ,TYPE**,int ,int ,int , int ) ;  //p
 
 void row_threaded_marix_mult(TYPE** matrixA,TYPE** matrixB,TYPE **matrixC,int rowsA,int colsA,int rowsB, int colsB)
 {
+
+
+
+
+printf("%d\n",matrixA[1][1]);
+printf("%d\n",(TYPE*)matrixB);
+
+
     if(colsA!=rowsB) //checks matrices multiplication condition
 
     {
@@ -85,7 +93,7 @@ void row_threaded_marix_mult(TYPE** matrixA,TYPE** matrixB,TYPE **matrixC,int ro
     pthread_attr_t attr_array[rowsA]; //array of thread attributes
     int thread_row[rowsA];  //array of number of row of matrix A to be given as args to the thread function
 
-    
+
 
 
     for(i = 0; i < rowsA; i++)
@@ -127,11 +135,23 @@ int main()
 
 
     int i,j;
-    TYPE matrixA[2][2] = {{1,2} , {3,4}} ;
 
-    TYPE matrixB[2][2] = {{3,4},{1,2}};
-    TYPE matrixC[2][2] ;
 
+TYPE ** matrixA = (TYPE**) malloc(2*sizeof(TYPE*));
+TYPE ** matrixB = (TYPE**) malloc(2*sizeof(TYPE*));
+TYPE ** matrixC = (TYPE**) malloc(2*sizeof(TYPE*));
+
+for(i=0;i<2;i++)
+{
+matrixA[i] = (TYPE*) malloc(2*sizeof(TYPE));
+matrixB[i] = (TYPE*) malloc(2*sizeof(TYPE));
+matrixC[i] = (TYPE*) malloc(2*sizeof(TYPE));
+for(j=0;j<2;j++){
+    matrixA[i][j]=(i*2)+j;
+
+matrixB[i][j]=(i*2)+j;
+}
+}
 
     row_threaded_marix_mult(matrixA,matrixB,matrixC,2,2,2,2);
 
@@ -160,29 +180,19 @@ void* calculate_row(Argument * a)
 
     Parameters * p = a->parameters;
 
-    TYPE** matrixA = p->matrixA ;
-    TYPE** matrixB = p->matrixB ;
-    TYPE** matrixC = p->matrixC ;
+  
 
-    int colsA = p->colsA ;
-    int colsB = p->colsB ;
-    int rowsB = p->rowsB;
+  
 
-    int row = a->row;
-
-    int x , y ;
-
-    for(i=0; i< colsB; i++) //loops the columns of matrixB
+    for(i=0; i< p->colsB ; i++) //loops the columns of matrixB
     {
 
-        for(j=0; j< rowsB; j++) //loops rows of matrixB //loops columns of matrixA for a specific row
+        for(j=0; j< p->rowsB; j++) //loops rows of matrixB //loops columns of matrixA for a specific row
         {
-          x=*((TYPE*)matrixA+(row*colsA)+j);
-          y = *((TYPE*)matrixB+(j*colsB)+i);
-           sum = sum +(x*y);
+          
+           sum = sum +(p->matrixA[a->row][j]*p->matrixB[j][i]);
         }
-        *((TYPE*)matrixC+(row*colsB)+i) = sum;
-
+        p->matrixC[a->row][i]=sum;
         sum=0;
     }
 
