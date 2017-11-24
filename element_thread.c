@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "element_thread.h"
-#define M 2
-#define K 2
-#define N 1
 #define TYPE float
 typedef struct Parameters  //paramters passed to the function
 {
@@ -42,55 +39,6 @@ void create_Parameters(Parameters*p , TYPE** matrix1,TYPE** matrix2,TYPE**matrix
 }
 
 
-
-
-//void calculate_matrix_without_thread();
-/*int main()
-{   int i=0;
-        int** matrixA = (int**)malloc(M*sizeof(int *));
-for(i=0; i<M ;i++)
-{
-    matrixA[i]=(int *)malloc(K*sizeof(int));
-}
-
-
-        int** matrixB = (int**)malloc(K*sizeof(int *));
-for(i=0; i<K ;i++)
-{
-    matrixB[i]=(int *)malloc(N*sizeof(int));
-}
-
-int** matrixC = (int**)malloc(M*sizeof(int *));
-for(i=0; i<M ;i++)
-{
-    matrixC[i]=(int *)malloc(K*sizeof(int));
-}
-      //TYPE matrixA[M][K] = {{1, 4}, {1, 1}}; //hardcoded matrices for trail.
-      //TYPE matrixB[K][N] = {{3}, {4}};
-      //TYPE matrixC[M][N];
-
-        matrixA[0][0]=1;
-        matrixA[0][1]=4;
-        matrixA[1][0]=1;
-        matrixA[1][1]=1;
-
-        matrixB[0][0]=3;
-        matrixB[1][0]=4;
-       
-        matrixC[0][0]=0;
-        matrixC[1][0]=0;
-        
-      int matrixB_rows = K;
-      calculate_matrix_by_element(matrixA,matrixB,matrixC,M,K,K,N);
-      print_resulting_matrix(matrixC);
-
-      //calculate_matrix_without_thread();
-      //print_resulting_matrix();
-
-      return 0;
-}
-
-*/
 //printing the resulting matrix C
 void print_resulting_matrix(TYPE ** matrixC,int rowsC,int colsC)
 {     TYPE ** result_matrix=matrixC;
@@ -123,14 +71,14 @@ void calculate_matrix_without_thread(TYPE ** matrixA, TYPE** matrixB,TYPE** matr
 }
 
 //function for calculating the multiplication of two matrices by creating a thread for each element.
-void calculate_matrix_by_element(TYPE ** matrixA, TYPE** matrixB, TYPE **matrixC,int rowsA,int colsA,int rowsB, int colsB )
+void calculate_matrix_by_element(TYPE ** matrixA, TYPE** matrixB, TYPE **matrixC,int rowsA,int colsA,int rowsB, int colsB,int *count )
 {
       Parameters * p = (Parameters*)malloc(sizeof(Parameters)); //allocates memory for Parameters
       create_Parameters(p,matrixA,matrixB,matrixC,rowsA,colsA,rowsB,colsB); //initializes p with parameters given to function
-      int i, j;
-      pthread_t threads[100];
+      int i, j,cnt=0;
+      pthread_t threads[1000000];
       //loop for assigning a thread to each and every element that will be calculated in the new matrix
-
+      int k=0;
       for (i = 0; i < p->rowsA; i++)
       {
             for (j = 0; j < p->colsB; j++)
@@ -139,13 +87,18 @@ void calculate_matrix_by_element(TYPE ** matrixA, TYPE** matrixB, TYPE **matrixC
                   data->row = i;
                   data->column = j;
                   data->par=p;
-                  threads[i] = create_thread_per_element(data);
+                  cnt++;
+                  threads[k] = create_thread_per_element(data);
+                  
+                  
             }
       }
-      for (j = 0; j < N; j++)
+      for (j = 0; j < k+1; j++)
       {
             pthread_join(threads[j], NULL);
       }
+      free(p);
+      *count=cnt;
 }
 
 //function for calculating the value of element.

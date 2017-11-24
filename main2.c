@@ -15,13 +15,13 @@ int main (int argc, char ** argv)
     clock_t start, end;
     double cpu_time_used1,cpu_time_used2;
     int colsA=0, colsB=0,rowsB=0,rowsA=0;
-    int i;
+    int i,count=0;
     //read Matrix A
     TYPE ** matrixA= read_matrix(argv[1],&colsA,&rowsA);
     printf("%d columns and  %d rows \n",colsA,rowsA);
     //read Matrix B
     TYPE ** matrixB= read_matrix(argv[2],&colsB,&rowsB);
-    printf("%d columns and %d rows\n ",colsB,rowsB);
+    printf("%d columns and %d rows \n ",colsB,rowsB);
     
     //create MatrixC
     TYPE** matrixC = (TYPE**)malloc(rowsA*sizeof(TYPE *));
@@ -31,9 +31,10 @@ for(i=0; i<rowsA ;i++)
 }
       //create matrix multiplication by threads
      start = clock();
-      calculate_matrix_by_element(matrixA,matrixB,matrixC,rowsA,colsA,rowsB,colsB);
+      calculate_matrix_by_element(matrixA,matrixB,matrixC,rowsA,colsA,rowsB,colsB,&count);
      end= clock();
      cpu_time_used1 = ((double) (end - start)) / CLOCKS_PER_SEC;
+     printf("%d threads\n",count);
     
       ///create matrix multiplication by without threads
      start = clock();

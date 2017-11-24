@@ -45,7 +45,7 @@ while( token = (char *)strtok_r(position,splitter,&position) )
         column_c++;
     }
    *cols=column_c;
-
+   
    return row;
 
 }
